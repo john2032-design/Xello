@@ -57,7 +57,7 @@
         }
 
         #hamburger {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
             color: var(--text-primary);
         }
@@ -128,6 +128,7 @@
             max-width: 900px;
             margin: 0 auto;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .feature-section {
@@ -150,7 +151,7 @@
             flex-direction: column;
         }
 
-        #chatHistory {
+        #chatHistory, #visionHistory {
             flex: 1;
             overflow-y: auto;
             padding: 20px 0;
@@ -206,6 +207,7 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         select {
@@ -214,6 +216,8 @@
             color: var(--text-primary);
             padding: 8px 12px;
             border-radius: 8px;
+            flex: 1;
+            min-width: 150px;
         }
 
         button.send-btn {
@@ -235,10 +239,10 @@
             white-space: pre-wrap;
         }
 
-        audio, img {
+        img.vision-img {
             max-width: 100%;
-            margin-top: 12px;
-            border-radius: 8px;
+            border-radius: 12px;
+            margin: 16px 0;
         }
 
         .overlay {
@@ -255,6 +259,12 @@
         .overlay.active {
             display: block;
         }
+
+        @media (max-width: 768px) {
+            #hamburger { font-size: 1.5rem; }
+            .controls { flex-direction: column; }
+            select, button.send-btn { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -270,13 +280,10 @@
         </button>
         <div class="nav-links">
             <a href="#chat-completion" onclick="setActiveSection('chat-completion')" class="active">Chat</a>
-            <a href="#responses" onclick="setActiveSection('responses')">Text Generation</a>
-            <a href="#audio-transcription" onclick="setActiveSection('audio-transcription')">Transcribe Audio</a>
-            <a href="#audio-translation" onclick="setActiveSection('audio-translation')">Translate Audio</a>
-            <a href="#audio-speech" onclick="setActiveSection('audio-speech')">Text-to-Speech</a>
+            <a href="#text-generation" onclick="setActiveSection('text-generation')">Text Generation</a>
             <a href="#vision" onclick="setActiveSection('vision')">Image Analysis</a>
             <a href="#compound-ai" onclick="setActiveSection('compound-ai')">Compound AI</a>
-            <a href="#models-list" onclick="setActiveSection('models-list')">Models List</a>
+            <a href="#models-list" onclick="setActiveSection('models-list')">Available Models</a>
         </div>
     </div>
 
@@ -289,18 +296,19 @@
     </header>
 
     <main>
-        <!-- Chat Completions -->
         <div id="chat-completion" class="feature-section active">
             <div class="chat-container">
                 <div id="chatHistory"></div>
                 <div class="input-area">
-                    <textarea id="chatPrompt" placeholder="Send a message..." rows="1" oninput="autoResize(this)"></textarea>
+                    <textarea id="chatPrompt" placeholder="Send a message..." oninput="autoResize(this)"></textarea>
                     <div class="controls">
                         <select id="chatModel">
-                            <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast & Cheap)</option>
-                            <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B (Best Quality)</option>
-                            <option value="openai/gpt-oss-20b">GPT-OSS 20B (Fast Reasoning)</option>
-                            <option value="openai/gpt-oss-120b">GPT-OSS 120B (Advanced)</option>
+                            <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
+                            <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B (Best)</option>
+                            <option value="openai/gpt-oss-20b">GPT-OSS 20B</option>
+                            <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
+                            <option value="qwen/qwen3-32b">Qwen3 32B (Preview)</option>
+                            <option value="moonshotai/kimi-k2-instruct-0905">Kimi K2 0905 (Preview)</option>
                         </select>
                         <button class="send-btn" onclick="handleChatCompletion()">Send</button>
                     </div>
@@ -308,8 +316,7 @@
             </div>
         </div>
 
-        <!-- Text Generation -->
-        <div id="responses" class="feature-section">
+        <div id="text-generation" class="feature-section">
             <h2>Text Generation</h2>
             <div class="input-area">
                 <textarea id="responsePrompt" placeholder="Enter your prompt..."></textarea>
@@ -317,7 +324,8 @@
                     <select id="responseModel">
                         <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B</option>
                         <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
-                        <option value="qwen/qwen3-32b">Qwen3 32B (Preview)</option>
+                        <option value="openai/gpt-oss-20b">GPT-OSS 20B</option>
+                        <option value="qwen/qwen3-32b">Qwen3 32B</option>
                     </select>
                     <button class="send-btn" onclick="handleResponse()">Generate</button>
                 </div>
@@ -325,66 +333,39 @@
             <div id="responseOutput" class="output"></div>
         </div>
 
-        <!-- Audio Transcription -->
-        <div id="audio-transcription" class="feature-section">
-            <h2>Audio Transcription</h2>
-            <input type="file" id="audioFile" accept="audio/*" style="margin:20px 0;">
-            <select id="audioModel">
-                <option value="whisper-large-v3">Whisper Large V3 (Multilingual)</option>
-                <option value="whisper-large-v3-turbo">Whisper Large V3 Turbo (Faster)</option>
-            </select>
-            <button class="send-btn" onclick="handleAudioTranscription()">Transcribe</button>
-            <div id="transcriptionOutput" class="output"></div>
-        </div>
-
-        <!-- Audio Translation -->
-        <div id="audio-translation" class="feature-section">
-            <h2>Audio Translation (to English)</h2>
-            <input type="file" id="translationFile" accept="audio/*" style="margin:20px 0;">
-            <button class="send-btn" onclick="handleAudioTranslation()">Translate</button>
-            <div id="translationOutput" class="output"></div>
-        </div>
-
-        <!-- Text-to-Speech -->
-        <div id="audio-speech" class="feature-section">
-            <h2>Text-to-Speech</h2>
-            <textarea id="ttsText" placeholder="Enter text to convert to speech..."></textarea>
-            <select id="ttsModel">
-                <option value="playai-tts">English TTS</option>
-                <option value="playai-tts-arabic">Arabic TTS</option>
-            </select>
-            <button class="send-btn" onclick="handleTTS()">Speak</button>
-            <audio id="ttsAudio" controls style="margin-top:20px;"></audio>
-        </div>
-
-        <!-- Vision (Image Analysis) -->
         <div id="vision" class="feature-section">
-            <h2>Image Analysis</h2>
-            <p>Note: Vision is supported on preview Llama 4 models (e.g., Maverick/Scout). Try with those if available.</p>
-            <input type="file" id="visionImage" accept="image/*">
-            <textarea id="visionPrompt" placeholder="What do you want to know about this image? (e.g., Describe in detail)"></textarea>
-            <select id="visionModel">
-                <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick (Preview, Multimodal)</option>
-                <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (Preview, Multimodal)</option>
-            </select>
-            <button class="send-btn" onclick="handleVision()">Analyze</button>
-            <img id="visionPreview" alt="Preview" style="margin-top:20px;">
-            <div id="visionOutput" class="output"></div>
+            <div class="chat-container">
+                <div id="visionHistory"></div>
+                <div class="input-area">
+                    <input type="file" id="visionImage" accept="image/*" style="color:var(--text-primary);">
+                    <textarea id="visionPrompt" placeholder="Ask about the image... (optional if image uploaded)" oninput="autoResize(this)"></textarea>
+                    <div class="controls">
+                        <select id="visionModel">
+                            <option value="meta-llama/llama-4-maverick-17b-128e-instruct" selected>Llama 4 Maverick (Multimodal)</option>
+                            <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (Multimodal)</option>
+                        </select>
+                        <button class="send-btn" onclick="handleVision()">Analyze</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Compound AI -->
         <div id="compound-ai" class="feature-section">
-            <h2>Compound AI (With Tools: Search, Code, etc.)</h2>
-            <textarea id="compoundPrompt" placeholder="Ask anything that may require tools (e.g., current news, calculations)..."></textarea>
-            <select id="compoundModel">
-                <option value="groq/compound" selected>Compound (Full)</option>
-                <option value="groq/compound-mini">Compound Mini</option>
-            </select>
-            <button class="send-btn" onclick="handleCompound()">Run</button>
-            <div id="compoundOutput" class="output"></div>
+            <div class="chat-container">
+                <div id="compoundHistory"></div>
+                <div class="input-area">
+                    <textarea id="compoundPrompt" placeholder="Ask anything (uses tools like search/code if needed)..." oninput="autoResize(this)"></textarea>
+                    <div class="controls">
+                        <select id="compoundModel">
+                            <option value="groq/compound" selected>Compound (Full)</option>
+                            <option value="groq/compound-mini">Compound Mini</option>
+                        </select>
+                        <button class="send-btn" onclick="handleCompound()">Run</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Models List -->
         <div id="models-list" class="feature-section">
             <h2>Available Models</h2>
             <button class="send-btn" onclick="listModels()">Refresh List</button>
@@ -394,9 +375,11 @@
 
     <script>
         const BASE_URL = 'https://api.groq.com/openai/v1';
-        const API_KEY = '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'; // Updated valid key
+        const API_KEY = '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';
 
         let chatHistory = [];
+        let visionHistory = [];
+        let compoundHistory = [];
 
         function openSidebar() {
             document.getElementById('sidebar').classList.add('open');
@@ -422,11 +405,17 @@
             document.getElementById('chatPrompt').value = '';
         }
 
-        function addMessage(role, content) {
-            const history = document.getElementById('chatHistory');
+        function addMessage(container, role, content, imageUrl = null) {
+            const history = document.getElementById(container);
             const div = document.createElement('div');
             div.className = `message ${role}-message`;
-            div.textContent = content;
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = 'vision-img';
+                div.appendChild(img);
+            }
+            div.appendChild(document.createTextNode(content));
             history.appendChild(div);
             history.scrollTop = history.scrollHeight;
         }
@@ -457,7 +446,7 @@
             const prompt = document.getElementById('chatPrompt').value.trim();
             if (!prompt) return;
 
-            addMessage('user', prompt);
+            addMessage('chatHistory', 'user', prompt);
             chatHistory.push({ role: 'user', content: prompt });
             document.getElementById('chatPrompt').value = '';
 
@@ -472,9 +461,9 @@
 
                 const reply = data.choices[0].message.content;
                 chatHistory.push({ role: 'assistant', content: reply });
-                addMessage('assistant', reply);
+                addMessage('chatHistory', 'assistant', reply);
             } catch (err) {
-                addMessage('assistant', `Error: ${err.message}`);
+                addMessage('chatHistory', 'assistant', `Error: ${err.message}`);
             }
         }
 
@@ -495,116 +484,57 @@
             }
         }
 
-        async function handleAudioTranscription() {
-            const file = document.getElementById('audioFile').files[0];
-            if (!file) return alert('Please select an audio file');
-            const model = document.getElementById('audioModel').value;
-            const form = new FormData();
-            form.append('file', file);
-            form.append('model', model);
-            const output = document.getElementById('transcriptionOutput');
-            output.textContent = 'Transcribing...';
-            try {
-                const data = await fetch(`${BASE_URL}/audio/transcriptions`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${API_KEY}` },
-                    body: form
-                }).then(r => r.json());
-                output.textContent = data.text;
-            } catch (err) {
-                output.textContent = `Error: ${err.message}`;
-            }
-        }
-
-        async function handleAudioTranslation() {
-            const file = document.getElementById('translationFile').files[0];
-            if (!file) return alert('Please select an audio file');
-            const form = new FormData();
-            form.append('file', file);
-            form.append('model', 'whisper-large-v3');
-            const output = document.getElementById('translationOutput');
-            output.textContent = 'Translating...';
-            try {
-                const data = await fetch(`${BASE_URL}/audio/translations`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${API_KEY}` },
-                    body: form
-                }).then(r => r.json());
-                output.textContent = data.text;
-            } catch (err) {
-                output.textContent = `Error: ${err.message}`;
-            }
-        }
-
-        async function handleTTS() {
-            const text = document.getElementById('ttsText').value.trim();
-            if (!text) return;
-            const model = document.getElementById('ttsModel').value;
-            try {
-                const resp = await fetch(`${BASE_URL}/audio/speech`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ input: text, model })
-                });
-                if (!resp.ok) throw new Error(await resp.text());
-                const blob = await resp.blob();
-                document.getElementById('ttsAudio').src = URL.createObjectURL(blob);
-            } catch (err) {
-                alert(`Error: ${err.message}`);
-            }
-        }
-
         async function handleVision() {
             const fileInput = document.getElementById('visionImage');
-            const prompt = document.getElementById('visionPrompt').value || "Describe this image in detail.";
+            const promptText = document.getElementById('visionPrompt').value.trim() || "Describe this image in detail.";
             if (!fileInput.files[0]) return alert('Please upload an image');
 
-            const preview = document.getElementById('visionPreview');
-            preview.src = URL.createObjectURL(fileInput.files[0]);
+            const imageUrl = URL.createObjectURL(fileInput.files[0]);
+            addMessage('visionHistory', 'user', promptText, imageUrl);
+            visionHistory.push({ role: 'user', content: [{ type: 'text', text: promptText }, { type: 'image_url', image_url: { url: imageUrl } }] });
 
             const reader = new FileReader();
             reader.onload = async () => {
                 const base64 = reader.result.split(',')[1];
                 const model = document.getElementById('visionModel').value;
-                const output = document.getElementById('visionOutput');
-                output.textContent = 'Analyzing...';
                 try {
                     const data = await apiRequest('/chat/completions', {
                         model,
-                        messages: [{
-                            role: 'user',
-                            content: [
-                                { type: 'text', text: prompt },
-                                { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } }
-                            ]
-                        }],
+                        messages: [{ role: 'user', content: [{ type: 'text', text: promptText }, { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } }] }],
                         max_tokens: 1024
                     });
-                    output.textContent = data.choices[0].message.content;
+                    const reply = data.choices[0].message.content;
+                    visionHistory.push({ role: 'assistant', content: reply });
+                    addMessage('visionHistory', 'assistant', reply);
                 } catch (err) {
-                    output.textContent = `Error: ${err.message}`;
+                    addMessage('visionHistory', 'assistant', `Error: ${err.message}`);
                 }
             };
             reader.readAsDataURL(fileInput.files[0]);
+            document.getElementById('visionPrompt').value = '';
+            fileInput.value = '';
         }
 
         async function handleCompound() {
             const prompt = document.getElementById('compoundPrompt').value.trim();
             if (!prompt) return;
-            const model = document.getElementById('compoundModel').value;
-            const output = document.getElementById('compoundOutput');
-            output.textContent = 'Thinking with tools...';
+
+            addMessage('compoundHistory', 'user', prompt);
+            compoundHistory.push({ role: 'user', content: prompt });
+            document.getElementById('compoundPrompt').value = '';
+
             try {
+                const model = document.getElementById('compoundModel').value;
                 const data = await apiRequest('/chat/completions', {
-                    messages: [{ role: 'user', content: prompt }],
+                    messages: compoundHistory,
                     model
                 });
-                output.textContent = data.choices[0].message.content;
+
+                const reply = data.choices[0].message.content;
+                compoundHistory.push({ role: 'assistant', content: reply });
+                addMessage('compoundHistory', 'assistant', reply);
             } catch (err) {
-                output.textContent = `Error: ${err.message}`;
+                addMessage('compoundHistory', 'assistant', `Error: ${err.message}`);
             }
         }
 
@@ -615,7 +545,8 @@
                 const data = await fetch(`${BASE_URL}/models`, {
                     headers: { 'Authorization': `Bearer ${API_KEY}` }
                 }).then(r => r.json());
-                output.textContent = JSON.stringify(data.data, null, 2);
+                const models = data.data.map(m => `${m.id} (${m.owned_by || 'Groq'})`).join('\n');
+                output.textContent = models || 'No models returned';
             } catch (err) {
                 output.textContent = `Error: ${err.message}`;
             }
