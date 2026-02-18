@@ -8,10 +8,10 @@
 :root{
   --blue:#0066ff;
   --glow:rgba(0,102,255,0.7);
-  --yellow:#ffff00;
-  --yellow-glow:rgba(255,255,0,0.45);
-  --yellow-bg:rgba(255,255,0,0.08);
-  --yellow-border:rgba(255,255,0,0.45);
+  --yellow:#ffd84d;
+  --yellow-glow:rgba(255,216,77,0.18);
+  --yellow-bg:rgba(255,216,77,0.06);
+  --yellow-border:rgba(255,216,77,0.22);
   --footer-space:clamp(56px,10vh,96px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -96,16 +96,15 @@ body{
   font-size:clamp(13px,3.4vw,17px);
   font-weight:600;
   line-height:1.4;
-  box-shadow:0 18px 45px rgba(0,0,0,0.65);
+  box-shadow:0 14px 35px rgba(0,0,0,0.55);
   backdrop-filter:blur(12px);
   word-break:break-word;
-  animation:yellowPulse 3s cubic-bezier(0.4,0,0.2,1) infinite;
+  animation:yellowGlow 4s ease-in-out infinite;
 }
-@keyframes yellowPulse{
-  0%{box-shadow:0 12px 30px rgba(0,0,0,0.55)}
-  30%{box-shadow:0 18px 45px rgba(0,0,0,0.65), inset 0 0 30px var(--yellow-glow); transform:translateY(-2px)}
-  70%{box-shadow:0 18px 45px rgba(0,0,0,0.65), inset 0 0 30px var(--yellow-glow); transform:translateY(-1px)}
-  100%{box-shadow:0 12px 30px rgba(0,0,0,0.55); transform:translateY(0)}
+@keyframes yellowGlow{
+  0%{box-shadow:0 14px 35px rgba(0,0,0,0.55); filter:brightness(1); transform:none}
+  50%{box-shadow:0 22px 50px rgba(0,0,0,0.62), inset 0 0 18px var(--yellow-glow); filter:brightness(1.04); transform:none}
+  100%{box-shadow:0 14px 35px rgba(0,0,0,0.55); filter:brightness(1); transform:none}
 }
 .footer{
   position:fixed;
@@ -142,7 +141,7 @@ body{
   <div class="loader-ring" aria-hidden="true"></div>
   <div id="countdown" aria-live="polite" role="timer">25</div>
   <div class="count-label">SECONDS UNTIL REDIRECT</div>
-  <div class="warning" role="alert">⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️</div>
+  <div class="warning" role="alert">⚠️ Luarmor Might Blacklist Continue At Your Own Risk ⚠️</div>
 </div>
 <div class="footer">VortixWorld • Luarmor 2026</div>
 <script id="target-data" type="application/json" data-b64="%TARGET_B64%"></script>
