@@ -6,7 +6,6 @@
     <title>VortixWorld Luarmor</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
         :root {
             --blue: #0066ff;
             --glow: rgba(0,102,255,0.7);
@@ -15,9 +14,7 @@
             --yellow-bg: rgba(255,255,0,0.08);
             --yellow-border: rgba(255,255,0,0.45);
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-
         body {
             min-height: 100dvh;
             background: linear-gradient(135deg, #000000 0%, #000033 50%, #000022 100%);
@@ -32,13 +29,11 @@
             position: relative;
             padding: 20px;
         }
-
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         .container {
             position: relative;
             z-index: 2;
@@ -49,7 +44,6 @@
             flex-direction: column;
             align-items: center;
         }
-
         .logo {
             font-size: clamp(34px, 8.5vw, 58px);
             font-weight: 700;
@@ -59,12 +53,10 @@
             text-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 4px 20px rgba(0,0,0,0.7);
             will-change: transform;
         }
-
         @keyframes logoBreathe {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.035); }
         }
-
         .loader-ring {
             width: 96px;
             height: 96px;
@@ -76,11 +68,9 @@
             margin-bottom: 24px;
             will-change: transform;
         }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
         #countdown {
             font-size: clamp(72px, 19vw, 118px);
             font-weight: 700;
@@ -91,7 +81,6 @@
             will-change: transform, color;
             margin-bottom: 8px;
         }
-
         .count-label {
             font-size: clamp(15.5px, 4.2vw, 19.5px);
             font-weight: 500;
@@ -99,7 +88,6 @@
             opacity: 0.88;
             margin-bottom: 46px;
         }
-
         .warning {
             color: var(--yellow);
             background: var(--yellow-bg);
@@ -113,14 +101,12 @@
             box-shadow: 0 18px 45px rgba(0,0,0,0.65);
             animation: warningPulse 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
-
         @keyframes warningPulse {
             0% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
             30% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px var(--yellow-glow); }
             70% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px var(--yellow-glow); }
             100% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
         }
-
         .footer {
             position: absolute;
             bottom: 32px;
@@ -128,16 +114,13 @@
             opacity: 0.52;
             letter-spacing: 1px;
         }
-
         @media (prefers-reduced-motion: reduce) {
             body, .logo, .loader-ring, .warning { animation: none !important; }
         }
-
         @media (max-width: 380px) {
             .loader-ring { width: 80px; height: 80px; }
             #countdown { font-size: clamp(60px, 18vw, 100px); }
         }
-
         @media (orientation: landscape) and (max-height: 520px) {
             body { padding: 12px; }
             .container { margin-top: -30px; }
@@ -147,68 +130,53 @@
 <body>
     <div class="container">
         <div class="logo">VortixWorld Luarmor</div>
-        
         <div class="loader-ring"></div>
-
         <div id="countdown" aria-live="polite" role="timer">25</div>
-
         <div class="count-label">SECONDS UNTIL REDIRECT</div>
-        
-        <div class="warning" role="alert">
-            ⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️
-        </div>
+        <div class="warning" role="alert">⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️</div>
     </div>
-
     <div class="footer">VortixWorld • Secure Delayed Redirect</div>
-
+    <script id="target-data" type="application/json" data-b64="%TARGET_B64%"></script>
     <script>
-        // NOTE: Server injects the TARGET_URL as a JS string literal.
-        // Replace token %TARGET_URL% with: JSON.stringify(result) on the server.
-        // Example final line after replacement: const TARGET_URL = "https://example.com/?a=1&b=2";
-        const TARGET_URL = %TARGET_URL%;
-
-        // ensure displayed countdown matches JS state
+        function b64DecodeUnicode(str){
+            try{
+                return decodeURIComponent(Array.prototype.map.call(atob(str),function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);}).join(''));
+            }catch(e){
+                return '';
+            }
+        }
+        const b64 = (document.getElementById('target-data')||{}).dataset?.b64||'';
+        const TARGET_URL = b64 ? b64DecodeUnicode(b64) : '';
         let timeLeft = 25;
         const countdownEl = document.getElementById('countdown');
         countdownEl.textContent = timeLeft;
-
-        // meta refresh fallback (uses the same TARGET_URL)
-        try {
-            const meta = document.createElement('meta');
-            meta.httpEquiv = "refresh";
-            meta.content = "25; url=" + TARGET_URL;
-            document.head.appendChild(meta);
-        } catch (e) {
-            console.warn('Could not set meta refresh', e);
+        if(TARGET_URL){
+            try{
+                const meta = document.createElement('meta');
+                meta.httpEquiv = "refresh";
+                meta.content = "25; url=" + TARGET_URL;
+                document.head.appendChild(meta);
+            }catch(e){}
         }
-
-        // countdown + redirect
-        const timer = setInterval(() => {
+        const timer = setInterval(function(){
             timeLeft--;
             countdownEl.textContent = timeLeft >= 0 ? timeLeft : 0;
-
-            if (timeLeft <= 8) {
+            if(timeLeft <= 8){
                 countdownEl.style.color = '#ff3366';
                 countdownEl.style.transform = 'scale(1.15)';
-            } else {
+            }else{
                 countdownEl.style.color = '';
                 countdownEl.style.transform = '';
             }
-
-            if (timeLeft <= 0) {
+            if(timeLeft <= 0){
                 clearInterval(timer);
-                if (typeof TARGET_URL === 'string' && TARGET_URL.trim().length > 0) {
-                    // primary: window.location.replace
-                    try {
-                        window.location.replace(TARGET_URL);
-                    } catch (err) {
-                        window.location.href = TARGET_URL;
-                    }
-                } else {
-                    console.error('Redirect target is empty or invalid; aborting redirect.');
+                if(TARGET_URL && TARGET_URL.trim().length > 0){
+                    try{ window.location.replace(TARGET_URL); }catch(err){ window.location.href = TARGET_URL; }
+                }else{
+                    console.error('Redirect target empty; aborting.');
                 }
             }
-        }, 1000);
+        },1000);
     </script>
 </body>
 </html>
