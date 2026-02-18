@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VortixWorld Luarmor</title>
+    <link rel="stylesheet" href="/styles/global.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">VortixWorld Luarmor</div>
+        
+        <div class="loader-wrapper">
+            <div class="loader-ring ring-outer"></div>
+            <div class="loader-ring ring-inner"></div>
+        </div>
+
+        <div class="progress-container">
+            <svg class="progress-ring" width="148" height="148" aria-hidden="true">
+                <defs>
+                    <filter id="progress-glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <circle class="progress-ring__circle-bg" cx="74" cy="74" r="64"/>
+                <circle id="progress-circle" class="progress-ring__circle" cx="74" cy="74" r="64" stroke-dasharray="402" stroke-dashoffset="402" filter="url(#progress-glow)"/>
+            </svg>
+            <div id="countdown" aria-live="polite" role="timer">25</div>
+        </div>
+
+        <div class="count-label">SECONDS UNTIL REDIRECT</div>
+        
+        <div class="warning" role="alert">
+            ⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️
+        </div>
+    </div>
+
+    <div class="footer">VortixWorld • Secure Delayed Redirect</div>
+
+    <script>
+        let timeLeft = 25;
+        const countdownEl = document.getElementById('countdown');
+        const circle = document.getElementById('progress-circle');
+        const circumference = 402;
+        const startTime = Date.now();
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        setProgress(100);
+
+        const timer = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const newTime = Math.max(0, 25 - elapsed);
+
+            if (newTime !== timeLeft) {
+                timeLeft = newTime;
+                countdownEl.textContent = timeLeft;
+                setProgress((timeLeft / 25) * 100);
+
+                if (timeLeft <= 8) {
+                    countdownEl.style.color = '#ff3366';
+                    countdownEl.style.transform = 'translate(-50%, -50%) scale(1.15)';
+                }
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.replace(%TARGET_URL%);
+            }
+        }, 50);
+
+        const meta = document.createElement('meta');
+        meta.httpEquiv = "refresh";
+        meta.content = "25; url=" + %TARGET_URL%;
+        document.head.appendChild(meta);
+    </script>
+</body>
+</html>
