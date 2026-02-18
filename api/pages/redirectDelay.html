@@ -45,6 +45,9 @@
             width: 100%;
             max-width: 480px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .logo {
@@ -62,87 +65,23 @@
             50% { transform: scale(1.035); }
         }
 
-        .spinner-container {
-            position: relative;
-            width: 148px;
-            height: 148px;
-            margin: 0 auto 32px;
-        }
-
-        .loader-wrapper {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            width: 124px;
-            height: 124px;
-            will-change: transform;
-        }
-
         .loader-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .ring-outer {
-            width: 124px;
-            height: 124px;
-            border: 7px solid rgba(255,255,255,0.09);
-            border-top-color: #ffffff;
-            animation: spin 1.28s linear infinite;
-            box-shadow: 0 0 40px rgba(255,255,255,0.25);
-            will-change: transform;
-        }
-
-        .ring-inner {
             width: 96px;
             height: 96px;
-            border: 6px solid rgba(0,102,255,0.35);
-            border-bottom-color: #0066ff;
-            animation: spin 2.65s linear infinite reverse;
+            border: 8px solid rgba(255,255,255,0.12);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+            box-shadow: 0 0 35px rgba(255,255,255,0.3), inset 0 0 20px rgba(0,102,255,0.3);
+            margin-bottom: 24px;
             will-change: transform;
         }
 
         @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        .progress-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 148px;
-            height: 148px;
-        }
-
-        .progress-ring {
-            transform: rotate(-90deg);
-            will-change: transform;
-        }
-
-        .progress-ring__circle-bg {
-            fill: transparent;
-            stroke: #ffffff15;
-            stroke-width: 11;
-        }
-
-        .progress-ring__circle {
-            fill: transparent;
-            stroke: #0066ff;
-            stroke-width: 11;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: stroke-dashoffset 0.32s linear;
-            will-change: stroke-dashoffset;
+            to { transform: rotate(360deg); }
         }
 
         #countdown {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             font-size: clamp(72px, 19vw, 118px);
             font-weight: 700;
             line-height: 1;
@@ -150,6 +89,7 @@
             text-shadow: 0 10px 40px rgba(0,0,0,0.75);
             transition: all 0.4s ease;
             will-change: transform, color;
+            margin-bottom: 8px;
         }
 
         .count-label {
@@ -190,13 +130,11 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            body, .logo, .ring-outer, .ring-inner, .warning { animation: none !important; }
-            .progress-ring__circle { transition: none; }
+            body, .logo, .loader-ring, .warning { animation: none !important; }
         }
 
         @media (max-width: 380px) {
-            .spinner-container { transform: scale(0.92); }
-            .logo { font-size: clamp(30px, 8vw, 52px); }
+            .loader-ring { width: 80px; height: 80px; }
             #countdown { font-size: clamp(60px, 18vw, 100px); }
         }
 
@@ -210,29 +148,9 @@
     <div class="container">
         <div class="logo">VortixWorld Luarmor</div>
         
-        <div class="spinner-container">
-            <div class="progress-container">
-                <svg class="progress-ring" width="148" height="148" aria-hidden="true">
-                    <defs>
-                        <filter id="progress-glow" x="-50%" y="-50%" width="200%" height="200%">
-                            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-                            <feMerge>
-                                <feMergeNode in="blur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                        </filter>
-                    </defs>
-                    <circle class="progress-ring__circle-bg" cx="74" cy="74" r="64"/>
-                    <circle id="progress-circle" class="progress-ring__circle" cx="74" cy="74" r="64" stroke-dasharray="402" stroke-dashoffset="402" filter="url(#progress-glow)"/>
-                </svg>
-                <div id="countdown" aria-live="polite" role="timer">25</div>
-            </div>
+        <div class="loader-ring"></div>
 
-            <div class="loader-wrapper">
-                <div class="loader-ring ring-outer"></div>
-                <div class="loader-ring ring-inner"></div>
-            </div>
-        </div>
+        <div id="countdown" aria-live="polite" role="timer">25</div>
 
         <div class="count-label">SECONDS UNTIL REDIRECT</div>
         
@@ -246,37 +164,21 @@
     <script>
         let timeLeft = 25;
         const countdownEl = document.getElementById('countdown');
-        const circle = document.getElementById('progress-circle');
-        const circumference = 402;
-        const startTime = Date.now();
-
-        function setProgress(percent) {
-            const offset = circumference - (percent / 100 * circumference);
-            circle.style.strokeDashoffset = offset;
-        }
-
-        setProgress(100);
 
         const timer = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const newTime = Math.max(0, 25 - elapsed);
+            timeLeft--;
+            countdownEl.textContent = timeLeft;
 
-            if (newTime !== timeLeft) {
-                timeLeft = newTime;
-                countdownEl.textContent = timeLeft;
-                setProgress((timeLeft / 25) * 100);
-
-                if (timeLeft <= 8) {
-                    countdownEl.style.color = '#ff3366';
-                    countdownEl.style.transform = 'translate(-50%, -50%) scale(1.15)';
-                }
+            if (timeLeft <= 8) {
+                countdownEl.style.color = '#ff3366';
+                countdownEl.style.transform = 'scale(1.15)';
             }
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
                 window.location.replace(%TARGET_URL%);
             }
-        }, 50);
+        }, 1000);
 
         const meta = document.createElement('meta');
         meta.httpEquiv = "refresh";
