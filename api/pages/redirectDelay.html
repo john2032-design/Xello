@@ -1,182 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VortixWorld Luarmor</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        :root {
-            --blue: #0066ff;
-            --glow: rgba(0,102,255,0.7);
-            --yellow: #ffff00;
-            --yellow-glow: rgba(255,255,0,0.45);
-            --yellow-bg: rgba(255,255,0,0.08);
-            --yellow-border: rgba(255,255,0,0.45);
-        }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            min-height: 100dvh;
-            background: linear-gradient(135deg, #000000 0%, #000033 50%, #000022 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 25.5s ease infinite;
-            color: #ffffff;
-            font-family: 'Inter', system-ui, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-            padding: 20px;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .container {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 480px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo {
-            font-size: clamp(34px, 8.5vw, 58px);
-            font-weight: 700;
-            letter-spacing: -2.8px;
-            margin-bottom: 52px;
-            animation: logoBreathe 6.8s ease-in-out infinite;
-            text-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 4px 20px rgba(0,0,0,0.7);
-            will-change: transform;
-        }
-        @keyframes logoBreathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.035); }
-        }
-        .loader-ring {
-            width: 96px;
-            height: 96px;
-            border: 8px solid rgba(255,255,255,0.12);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 1.2s linear infinite;
-            box-shadow: 0 0 35px rgba(255,255,255,0.3), inset 0 0 20px rgba(0,102,255,0.3);
-            margin-bottom: 24px;
-            will-change: transform;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        #countdown {
-            font-size: clamp(72px, 19vw, 118px);
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -6px;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.75);
-            transition: all 0.4s ease;
-            will-change: transform, color;
-            margin-bottom: 8px;
-        }
-        .count-label {
-            font-size: clamp(15.5px, 4.2vw, 19.5px);
-            font-weight: 500;
-            letter-spacing: 2.2px;
-            opacity: 0.88;
-            margin-bottom: 46px;
-        }
-        .warning {
-            color: var(--yellow);
-            background: var(--yellow-bg);
-            backdrop-filter: blur(22px);
-            border: 1.5px solid var(--yellow-border);
-            border-radius: 22px;
-            padding: 24px 30px;
-            font-size: clamp(15.8px, 4.1vw, 18px);
-            font-weight: 600;
-            line-height: 1.48;
-            box-shadow: 0 18px 45px rgba(0,0,0,0.65);
-            animation: warningPulse 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-        @keyframes warningPulse {
-            0% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
-            30% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px var(--yellow-glow); }
-            70% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px var(--yellow-glow); }
-            100% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
-        }
-        .footer {
-            position: absolute;
-            bottom: 32px;
-            font-size: 13.8px;
-            opacity: 0.52;
-            letter-spacing: 1px;
-        }
-        @media (prefers-reduced-motion: reduce) {
-            body, .logo, .loader-ring, .warning { animation: none !important; }
-        }
-        @media (max-width: 380px) {
-            .loader-ring { width: 80px; height: 80px; }
-            #countdown { font-size: clamp(60px, 18vw, 100px); }
-        }
-        @media (orientation: landscape) and (max-height: 520px) {
-            body { padding: 12px; }
-            .container { margin-top: -30px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VortixWorld Luarmor</title>
+<style>
+:root{
+  --blue:#0066ff;
+  --glow:rgba(0,102,255,0.7);
+  --yellow:#ffff00;
+  --yellow-glow:rgba(255,255,0,0.45);
+  --yellow-bg:rgba(255,255,0,0.08);
+  --yellow-border:rgba(255,255,0,0.45);
+  --footer-space:clamp(56px,10vh,96px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#000000 0%,#000033 50%,#000022 100%);
+  background-size:400% 400%;
+  animation:gradientShift 25.5s ease infinite;
+  color:#fff;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  padding:20px;
+  padding-bottom:var(--footer-space);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.container{
+  width:100%;
+  max-width:560px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(12px,3.5vw,32px);
+  padding:clamp(14px,3.2vw,28px);
+  text-align:center;
+}
+.logo{
+  font-size:clamp(28px,6.8vw,56px);
+  font-weight:700;
+  letter-spacing:-1.6px;
+  text-shadow:0 0 30px var(--glow),0 0 60px var(--glow);
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+}
+.loader-ring{
+  width:clamp(64px,12vw,96px);
+  height:clamp(64px,12vw,96px);
+  border:8px solid rgba(255,255,255,0.12);
+  border-top-color:#ffffff;
+  border-radius:50%;
+  animation:spin 1.2s linear infinite;
+  box-shadow:0 0 35px rgba(255,255,255,0.3),inset 0 0 20px rgba(0,102,255,0.3);
+  flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+#countdown{
+  font-size:clamp(48px,14vw,118px);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-4px;
+  margin-bottom:0;
+  transition:all .28s ease;
+  word-break:break-word;
+  max-width:100%;
+  display:block;
+}
+.count-label{
+  font-size:clamp(13px,3.2vw,18px);
+  font-weight:600;
+  letter-spacing:2px;
+  opacity:.9;
+}
+.warning{
+  width:100%;
+  max-width:540px;
+  color:var(--yellow);
+  background:var(--yellow-bg);
+  border:1.2px solid var(--yellow-border);
+  border-radius:16px;
+  padding:16px 20px;
+  font-size:clamp(13px,3.4vw,17px);
+  font-weight:600;
+  line-height:1.4;
+  box-shadow:0 18px 45px rgba(0,0,0,0.65);
+  backdrop-filter:blur(12px);
+  word-break:break-word;
+}
+.footer{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(env(safe-area-inset-bottom,16px));
+  font-size:13.5px;
+  opacity:.6;
+  letter-spacing:1px;
+  padding:6px 12px;
+  pointer-events:none;
+  background:transparent;
+}
+@media (max-width:420px){
+  .logo{font-size:clamp(22px,8.5vw,34px)}
+  #countdown{font-size:clamp(42px,18vw,86px)}
+  .warning{padding:12px 14px;border-radius:12px}
+  .container{padding:12px;gap:12px}
+}
+@media (orientation:landscape) and (max-height:520px){
+  body{padding:12px;padding-bottom:var(--footer-space)}
+  .container{gap:10px;max-width:720px}
+  .logo{font-size:28px}
+  #countdown{font-size:clamp(36px,12vw,64px)}
+}
+@media (prefers-reduced-motion:reduce){
+  body, .loader-ring{animation:none}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">VortixWorld Luarmor</div>
-        <div class="loader-ring"></div>
-        <div id="countdown" aria-live="polite" role="timer">25</div>
-        <div class="count-label">SECONDS UNTIL REDIRECT</div>
-        <div class="warning" role="alert">⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️</div>
-    </div>
-    <div class="footer">VortixWorld • Secure Delayed Redirect</div>
-    <script id="target-data" type="application/json" data-b64="%TARGET_B64%"></script>
-    <script>
-        function b64DecodeUnicode(str){
-            try{
-                return decodeURIComponent(Array.prototype.map.call(atob(str),function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);}).join(''));
-            }catch(e){
-                return '';
-            }
-        }
-        const b64 = (document.getElementById('target-data')||{}).dataset?.b64||'';
-        const TARGET_URL = b64 ? b64DecodeUnicode(b64) : '';
-        let timeLeft = 25;
-        const countdownEl = document.getElementById('countdown');
-        countdownEl.textContent = timeLeft;
-        if(TARGET_URL){
-            try{
-                const meta = document.createElement('meta');
-                meta.httpEquiv = "refresh";
-                meta.content = "25; url=" + TARGET_URL;
-                document.head.appendChild(meta);
-            }catch(e){}
-        }
-        const timer = setInterval(function(){
-            timeLeft--;
-            countdownEl.textContent = timeLeft >= 0 ? timeLeft : 0;
-            if(timeLeft <= 8){
-                countdownEl.style.color = '#ff3366';
-                countdownEl.style.transform = 'scale(1.15)';
-            }else{
-                countdownEl.style.color = '';
-                countdownEl.style.transform = '';
-            }
-            if(timeLeft <= 0){
-                clearInterval(timer);
-                if(TARGET_URL && TARGET_URL.trim().length > 0){
-                    try{ window.location.replace(TARGET_URL); }catch(err){ window.location.href = TARGET_URL; }
-                }else{
-                    console.error('Redirect target empty; aborting.');
-                }
-            }
-        },1000);
-    </script>
+<div class="container">
+  <div class="logo">VortixWorld Luarmor</div>
+  <div class="loader-ring" aria-hidden="true"></div>
+  <div id="countdown" aria-live="polite" role="timer">25</div>
+  <div class="count-label">SECONDS UNTIL REDIRECT</div>
+  <div class="warning" role="alert">⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️</div>
+</div>
+<div class="footer">VortixWorld • Secure Delayed Redirect</div>
+<script id="target-data" type="application/json" data-b64="%TARGET_B64%"></script>
+<script>
+function b64DecodeUnicode(s){try{return decodeURIComponent(Array.prototype.map.call(atob(s),function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);}).join(''))}catch(e){return ''}}
+const b64=(document.getElementById('target-data')||{}).dataset?.b64||'';
+const TARGET_URL=b64?b64DecodeUnicode(b64):'';
+let timeLeft=25;
+const countdownEl=document.getElementById('countdown');
+countdownEl.textContent=timeLeft;
+if(TARGET_URL){
+  try{
+    const meta=document.createElement('meta');
+    meta.httpEquiv="refresh";
+    meta.content="25; url="+TARGET_URL;
+    document.head.appendChild(meta);
+  }catch(e){}
+}
+const timer=setInterval(function(){
+  timeLeft--;
+  countdownEl.textContent=timeLeft>=0?timeLeft:0;
+  if(timeLeft<=8){
+    countdownEl.style.color='#ff3366';
+    countdownEl.style.transform='scale(1.12)';
+  }else{
+    countdownEl.style.color='';
+    countdownEl.style.transform='';
+  }
+  if(timeLeft<=0){
+    clearInterval(timer);
+    if(TARGET_URL&&TARGET_URL.trim().length>0){
+      try{window.location.replace(TARGET_URL)}catch(err){window.location.href=TARGET_URL}
+    }else{
+      console.error('Redirect target empty; aborting.');
+    }
+  }
+},1000);
+</script>
 </body>
 </html>
