@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/redirect", "destination": "/api/redirect" },
+    { "source": "/styles/global.css", "destination": "/api/pages/styles/global.css" }
+  ]
+}
