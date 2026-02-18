@@ -10,6 +10,10 @@
         :root {
             --blue: #0066ff;
             --glow: rgba(0,102,255,0.7);
+            --yellow: #ffff00;
+            --yellow-glow: rgba(255,255,0,0.45);
+            --yellow-bg: rgba(255,255,0,0.08);
+            --yellow-border: rgba(255,255,0,0.45);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -58,11 +62,19 @@
             50% { transform: scale(1.035); }
         }
 
-        .loader-wrapper {
+        .spinner-container {
             position: relative;
+            width: 148px;
+            height: 148px;
+            margin: 0 auto 32px;
+        }
+
+        .loader-wrapper {
+            position: absolute;
+            top: 12px;
+            left: 12px;
             width: 124px;
             height: 124px;
-            margin: 0 auto 32px;
             will-change: transform;
         }
 
@@ -98,10 +110,11 @@
         }
 
         .progress-container {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 148px;
             height: 148px;
-            margin: -118px auto 14px;
         }
 
         .progress-ring {
@@ -148,21 +161,24 @@
         }
 
         .warning {
-            background: rgba(255,255,255,0.055);
+            color: var(--yellow);
+            background: var(--yellow-bg);
             backdrop-filter: blur(22px);
-            border: 1.5px solid rgba(255,255,255,0.2);
+            border: 1.5px solid var(--yellow-border);
             border-radius: 22px;
             padding: 24px 30px;
             font-size: clamp(15.8px, 4.1vw, 18px);
             font-weight: 600;
             line-height: 1.48;
             box-shadow: 0 18px 45px rgba(0,0,0,0.65);
-            animation: warningPulse 4.2s ease-in-out infinite;
+            animation: warningPulse 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
 
         @keyframes warningPulse {
-            0%, 100% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
-            50% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px rgba(255,220,0,0.2); }
+            0% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
+            30% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px var(--yellow-glow); }
+            70% { box-shadow: 0 18px 45px rgba(0,0,0,0.65), inset 0 0 25px var(--yellow-glow); }
+            100% { box-shadow: 0 18px 45px rgba(0,0,0,0.65); }
         }
 
         .footer {
@@ -179,7 +195,9 @@
         }
 
         @media (max-width: 380px) {
-            .loader-wrapper { transform: scale(0.88); }
+            .spinner-container { transform: scale(0.92); }
+            .logo { font-size: clamp(30px, 8vw, 52px); }
+            #countdown { font-size: clamp(60px, 18vw, 100px); }
         }
 
         @media (orientation: landscape) and (max-height: 520px) {
@@ -192,26 +210,28 @@
     <div class="container">
         <div class="logo">VortixWorld Luarmor</div>
         
-        <div class="loader-wrapper">
-            <div class="loader-ring ring-outer"></div>
-            <div class="loader-ring ring-inner"></div>
-        </div>
+        <div class="spinner-container">
+            <div class="progress-container">
+                <svg class="progress-ring" width="148" height="148" aria-hidden="true">
+                    <defs>
+                        <filter id="progress-glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle class="progress-ring__circle-bg" cx="74" cy="74" r="64"/>
+                    <circle id="progress-circle" class="progress-ring__circle" cx="74" cy="74" r="64" stroke-dasharray="402" stroke-dashoffset="402" filter="url(#progress-glow)"/>
+                </svg>
+                <div id="countdown" aria-live="polite" role="timer">25</div>
+            </div>
 
-        <div class="progress-container">
-            <svg class="progress-ring" width="148" height="148" aria-hidden="true">
-                <defs>
-                    <filter id="progress-glow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-                        <feMerge>
-                            <feMergeNode in="blur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                </defs>
-                <circle class="progress-ring__circle-bg" cx="74" cy="74" r="64"/>
-                <circle id="progress-circle" class="progress-ring__circle" cx="74" cy="74" r="64" stroke-dasharray="402" stroke-dashoffset="402" filter="url(#progress-glow)"/>
-            </svg>
-            <div id="countdown" aria-live="polite" role="timer">25</div>
+            <div class="loader-wrapper">
+                <div class="loader-ring ring-outer"></div>
+                <div class="loader-ring ring-inner"></div>
+            </div>
         </div>
 
         <div class="count-label">SECONDS UNTIL REDIRECT</div>
