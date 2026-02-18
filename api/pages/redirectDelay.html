@@ -9,7 +9,7 @@
   --blue:#0066ff;
   --glow:rgba(0,102,255,0.7);
   --yellow:#ffd84d;
-  --yellow-glow:rgba(255,216,77,0.18);
+  --yellow-glow:rgba(255,216,77,0.12);
   --yellow-bg:rgba(255,216,77,0.06);
   --yellow-border:rgba(255,216,77,0.22);
   --footer-space:clamp(56px,10vh,96px);
@@ -99,12 +99,12 @@ body{
   box-shadow:0 14px 35px rgba(0,0,0,0.55);
   backdrop-filter:blur(12px);
   word-break:break-word;
-  animation:yellowGlow 4s ease-in-out infinite;
+  animation:yellowGlow 6s cubic-bezier(0.4,0,0.2,1) infinite;
 }
 @keyframes yellowGlow{
-  0%{box-shadow:0 14px 35px rgba(0,0,0,0.55); filter:brightness(1); transform:none}
-  50%{box-shadow:0 22px 50px rgba(0,0,0,0.62), inset 0 0 18px var(--yellow-glow); filter:brightness(1.04); transform:none}
-  100%{box-shadow:0 14px 35px rgba(0,0,0,0.55); filter:brightness(1); transform:none}
+  0%{box-shadow:0 14px 35px rgba(0,0,0,0.55); background:rgba(255,216,77,0.06); filter:brightness(1)}
+  50%{box-shadow:0 20px 48px rgba(0,0,0,0.60), inset 0 0 14px var(--yellow-glow); background:rgba(255,216,77,0.08); filter:brightness(1.03)}
+  100%{box-shadow:0 14px 35px rgba(0,0,0,0.55); background:rgba(255,216,77,0.06); filter:brightness(1)}
 }
 .footer{
   position:fixed;
