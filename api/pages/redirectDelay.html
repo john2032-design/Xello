@@ -162,28 +162,53 @@
     <div class="footer">VortixWorld • Secure Delayed Redirect</div>
 
     <script>
+        // NOTE: Server injects the TARGET_URL as a JS string literal.
+        // Replace token %TARGET_URL% with: JSON.stringify(result) on the server.
+        // Example final line after replacement: const TARGET_URL = "https://example.com/?a=1&b=2";
+        const TARGET_URL = %TARGET_URL%;
+
+        // ensure displayed countdown matches JS state
         let timeLeft = 25;
         const countdownEl = document.getElementById('countdown');
+        countdownEl.textContent = timeLeft;
 
+        // meta refresh fallback (uses the same TARGET_URL)
+        try {
+            const meta = document.createElement('meta');
+            meta.httpEquiv = "refresh";
+            meta.content = "25; url=" + TARGET_URL;
+            document.head.appendChild(meta);
+        } catch (e) {
+            console.warn('Could not set meta refresh', e);
+        }
+
+        // countdown + redirect
         const timer = setInterval(() => {
             timeLeft--;
-            countdownEl.textContent = timeLeft;
+            countdownEl.textContent = timeLeft >= 0 ? timeLeft : 0;
 
             if (timeLeft <= 8) {
                 countdownEl.style.color = '#ff3366';
                 countdownEl.style.transform = 'scale(1.15)';
+            } else {
+                countdownEl.style.color = '';
+                countdownEl.style.transform = '';
             }
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                window.location.replace(%TARGET_URL%);
+                if (typeof TARGET_URL === 'string' && TARGET_URL.trim().length > 0) {
+                    // primary: window.location.replace
+                    try {
+                        window.location.replace(TARGET_URL);
+                    } catch (err) {
+                        window.location.href = TARGET_URL;
+                    }
+                } else {
+                    console.error('Redirect target is empty or invalid; aborting redirect.');
+                }
             }
         }, 1000);
-
-        const meta = document.createElement('meta');
-        meta.httpEquiv = "refresh";
-        meta.content = "25; url=" + %TARGET_URL%;
-        document.head.appendChild(meta);
     </script>
 </body>
 </html>
