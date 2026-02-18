@@ -48,12 +48,14 @@ body{
   font-size:clamp(28px,6.8vw,56px);
   font-weight:700;
   letter-spacing:-1.6px;
-  text-shadow:0 0 30px var(--glow),0 0 60px var(--glow);
   line-height:1;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   max-width:100%;
+  color:#ffffff;
+  text-shadow:none;
+  background:none;
 }
 .loader-ring{
   width:clamp(64px,12vw,96px);
@@ -97,6 +99,13 @@ body{
   box-shadow:0 18px 45px rgba(0,0,0,0.65);
   backdrop-filter:blur(12px);
   word-break:break-word;
+  animation:yellowPulse 3s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+@keyframes yellowPulse{
+  0%{box-shadow:0 12px 30px rgba(0,0,0,0.55)}
+  30%{box-shadow:0 18px 45px rgba(0,0,0,0.65), inset 0 0 30px var(--yellow-glow); transform:translateY(-2px)}
+  70%{box-shadow:0 18px 45px rgba(0,0,0,0.65), inset 0 0 30px var(--yellow-glow); transform:translateY(-1px)}
+  100%{box-shadow:0 12px 30px rgba(0,0,0,0.55); transform:translateY(0)}
 }
 .footer{
   position:fixed;
@@ -123,7 +132,7 @@ body{
   #countdown{font-size:clamp(36px,12vw,64px)}
 }
 @media (prefers-reduced-motion:reduce){
-  body, .loader-ring{animation:none}
+  body, .loader-ring, .warning{animation:none}
 }
 </style>
 </head>
@@ -135,7 +144,7 @@ body{
   <div class="count-label">SECONDS UNTIL REDIRECT</div>
   <div class="warning" role="alert">⚠️ Luarmor.net Might Blacklist Continue At Your Own Risk ⚠️</div>
 </div>
-<div class="footer">VortixWorld • Secure Delayed Redirect</div>
+<div class="footer">VortixWorld • Luarmor 2026</div>
 <script id="target-data" type="application/json" data-b64="%TARGET_B64%"></script>
 <script>
 function b64DecodeUnicode(s){try{return decodeURIComponent(Array.prototype.map.call(atob(s),function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);}).join(''))}catch(e){return ''}}
