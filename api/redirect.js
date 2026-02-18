@@ -9,20 +9,19 @@ export default function handler(req, res) {
     return;
   }
 
-  // If user passed an encoded value (contains %xx sequences) decode it safely.
+  // Try to decode if it looks percent-encoded (but fall back if decodeURIComponent throws)
   let decodedTo = rawTo;
   try {
     if (/%[0-9A-Fa-f]{2}/.test(rawTo)) {
       decodedTo = decodeURIComponent(rawTo);
     }
   } catch (e) {
-    // if decode fails, fall back to rawTo
     decodedTo = rawTo;
   }
 
   let result = decodedTo;
 
-  // If it's an ads.luarmor.net URL, route via camper (and encode the original URL into the camper query)
+  // If it's an ads.luarmor.net URL, route via camper (and encode the original into the camper query)
   if (/^https?:\/\/ads\.luarmor\.net\//i.test(decodedTo)) {
     result = `http://camper.pythonanywhere.com/redirect?to=${encodeURIComponent(decodedTo)}`;
   }
@@ -35,10 +34,10 @@ export default function handler(req, res) {
     return;
   }
 
-  // For the delay page: inject a safe JS string literal (JSON.stringify produces a quoted + escaped string)
-  const safeJsString = JSON.stringify(result);
+  // Create base64 payload of the final target URL (safe to inject anywhere)
+  const targetB64 = Buffer.from(result, 'utf8').toString('base64');
 
-  // Try a few likely places for the template (helps on Vercel / different runtimes)
+  // Try multiple likely template locations (helps on Vercel)
   const candidates = [
     path.join(process.cwd(), 'api', 'pages', 'redirectDelay.html'),
     path.join(process.cwd(), 'pages', 'redirectDelay.html'),
@@ -53,7 +52,7 @@ export default function handler(req, res) {
         break;
       }
     } catch (e) {
-      // ignore and try next
+      // ignore and continue
     }
   }
 
@@ -62,8 +61,8 @@ export default function handler(req, res) {
     return;
   }
 
-  // Replace placeholder (must match exactly what's in your HTML)
-  html = html.replace('%TARGET_URL%', safeJsString);
+  // Replace placeholder %TARGET_B64% in the template with the base64 string
+  html = html.replace(/%TARGET_B64%/g, targetB64);
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
